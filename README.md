@@ -13,6 +13,8 @@ implementation is added.
 - [Overview](#overview)
 - [Setup](#setup)
 - [React Demo](#react-demo)
+- [Programmatic SDK and Model Downloads](#programmatic-sdk-and-model-downloads)
+- [Krisp Models](#krisp-models)
 - [VIVA Voice Isolation Quickstart](#viva-voice-isolation-quickstart)
 - [Pipecat with VIVA](#pipecat-with-viva)
 - [Calls and Apps with the Krisp JS SDK](#calls-and-apps-with-the-krisp-js-sdk)
@@ -93,6 +95,125 @@ npm run dev
 
 Place the downloaded Krisp JS SDK and model files in
 `react-demo/public/krisp/`, then allow microphone access in the browser.
+
+## Programmatic SDK and Model Downloads
+
+The Developers Portal API can return temporary download URLs for a specific
+SDK version and the model files associated with it. It is suitable for CI/CD,
+automated testing, and deployment scripts.
+
+**Host:** `https://api.developers.krisp.ai/`
+
+### Download URLs
+
+```text
+GET /v2/sdk/versions/{id}/download-urls
+```
+
+`id` is the numeric SDK version ID shown in your SDK dashboard.
+
+```bash
+curl --location \
+  "https://api.developers.krisp.ai/v2/sdk/versions/329/download-urls" \
+  --header "Authorization: api-key ${KRISP_DEVELOPER_API_KEY}"
+```
+
+The API key header uses the format `api-key YOUR_API_KEY`. Do not commit the
+key or expose it in browser or client-side code.
+
+The response contains:
+
+- `expires_in`: URL lifetime, usually 300 seconds
+- `version.download_url`: SDK package URL
+- `models[].download_url`: model package URLs
+- Package and model metadata such as filename, technology, and platform
+
+Example response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "expires_in": 300,
+    "version": {
+      "id": 42,
+      "version": "1.3.4",
+      "display_name": "VIVA",
+      "os": "windows_x64",
+      "platform": "server",
+      "technologies": ["viva"],
+      "filename": "release.zip",
+      "download_url": "https://s3.amazonaws.com/example-release.zip"
+    },
+    "models": [
+      {
+        "id": 1,
+        "technology": "voice_isolation",
+        "product": "viva",
+        "filename": "model.zip",
+        "download_url": "https://s3.amazonaws.com/example-model.zip"
+      }
+    ]
+  }
+}
+```
+
+Download URLs are short-lived. Download and verify packages immediately rather
+than storing the URLs for later use.
+
+## Krisp Models
+
+Krisp models are loaded in two main ways:
+
+- Krisp API models are selected in the client `model` field.
+- VIVA and RTC SDK models are downloaded and loaded from model files.
+
+### Krisp API
+
+| Model ID | Endpoint | Use |
+|---|---|---|
+| `VIVA-tel` | `/voice-isolation` | Voice Isolation for telephony audio at 8 or 16 kHz |
+| No model field | `/vt` | Voice Translation; select languages and voice in the request |
+
+### VIVA SDK
+
+Download VIVA models from the Developers Portal and load them as `.kef` files.
+
+| Model | Feature | Use |
+|---|---|---|
+| `krisp-viva-vi-tel-v2.5.1` | Voice Isolation | Telephony, 8-16 kHz; best noise cancellation |
+| `krisp-viva-vi-tel-lite-v2.5` | Voice Isolation | Telephony, 8-16 kHz; lowest CPU usage |
+| `krisp-viva-vi-tel-v2.7` | Voice Isolation | Telephony, 8-16 kHz; most ASR-friendly |
+| `krisp-viva-vi-pro-v1` | Voice Isolation | WebRTC audio above 16 kHz |
+| `krisp-viva-nc-ss-v1` | Noise cancellation | Smart-speaker and far-field audio; does not remove background voices |
+| `krisp-viva-tp-v3` | Turn-Taking | End-of-turn prediction across languages |
+| `krisp-viva-ip-v1.1` | Interrupt Prediction | Distinguishes interruptions from backchannels |
+| `krisp-viva-vad-v2` | VAD | Voice activity detection |
+
+Model families and recommended versions can change. Download and verify the
+versions supported by your SDK package.
+
+### RTC SDK
+
+RTC SDK model names follow
+`krisp-<technology>-<stream>-<size>-v<version>`. Here, `nc` means noise
+cancellation and `bvc` means background voice cancellation; `o` is outbound
+microphone audio and `i` is inbound speaker audio.
+
+| Model | Stream | Use |
+|---|---|---|
+| `krisp-nc-o-pro-v1` | Outbound | 32 kHz, high-quality noise cancellation |
+| `krisp-nc-o-med-v7` | Outbound | Mobile and power-limited devices |
+| `krisp-nc-o-lite-v1` | Outbound | 16 kHz, lowest CPU |
+| `krisp-nc-o-nb-v2` | Outbound | Narrow-band audio up to 8 kHz |
+| `krisp-bvc-o-pro-v3` | Outbound | Background voice cancellation |
+| `krisp-bvc-o-lite-v2` | Outbound | Lower-complexity background voice cancellation |
+| `krisp-nc-i-wb-pro-v3` | Inbound | Wide-band inbound noise cancellation |
+| `krisp-nc-i-nb-pro-v1` | Inbound | Narrow-band inbound noise cancellation |
+| `krisp-nc-i-nb-lite-v2` | Inbound | Lower-complexity narrow-band inbound noise cancellation |
+
+Large RTC models such as `krisp-nc-o-max-v1` and `krisp-bvc-o-max-v3` are
+available for evaluation on request.
 
 ## VIVA Voice Isolation Quickstart
 
