@@ -4,9 +4,8 @@ A practical reference for designing voice agents that combine
 retrieval-augmented generation (RAG) with speech-to-text (STT), turn detection,
 text-to-speech (TTS), and interruption handling.
 
-This repository currently contains a documentation-first example of one voice
-call. It is intended to explain the architecture and failure modes before an
-implementation is added.
+The repository includes an architecture guide and a React browser demo that
+streams audio through Krisp Voice Isolation.
 
 ## Contents
 
@@ -90,11 +89,12 @@ A browser demo is available in [`react-demo/`](./react-demo).
 ```bash
 cd react-demo
 npm install
-npm run dev
 ```
 
-Place the downloaded Krisp JS SDK and model files in
-`react-demo/public/krisp/`, then allow microphone access in the browser.
+Set `KRISP_API_KEY` in `react-demo/.env.local`, start the proxy and frontend in
+separate terminals with `npm run proxy` and `npm run dev`, then allow
+microphone access in the browser. The master key stays on the backend; see the
+[React demo guide](./react-demo/README.md) for details.
 
 ## Programmatic SDK and Model Downloads
 

@@ -220,6 +220,60 @@ h1 {
   font-size: 12px;
 }
 
+.suppression {
+  width: min(460px, calc(100% - 40px));
+  margin: 0 auto 20px;
+  text-align: left;
+}
+
+.suppression > div {
+  display: flex;
+  justify-content: space-between;
+  color: #c4ccc6;
+  font-size: 12px;
+}
+
+.suppression output {
+  color: #9fc2a8;
+  font-variant-numeric: tabular-nums;
+}
+
+.suppression input {
+  width: 100%;
+  margin: 12px 0 2px;
+  accent-color: #9abda3;
+}
+
+.suppression input:disabled {
+  opacity: 0.6;
+}
+
+.suppression p {
+  color: #7f8781;
+  font-size: 11px;
+}
+
+.playback {
+  width: min(460px, calc(100% - 40px));
+  margin: 0 auto 18px;
+}
+
+.playback span {
+  display: block;
+  margin-bottom: 8px;
+  color: #78827a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-align: left;
+}
+
+.playback audio {
+  width: 100%;
+  height: 38px;
+  filter: sepia(0.15) saturate(0.65);
+}
+
 .controls {
   min-height: 116px;
   display: flex;
